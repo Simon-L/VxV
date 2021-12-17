@@ -377,12 +377,15 @@ struct KnobScrollSensitivitySlider : ui::Slider {
 
 
 struct ViewButton : MenuButton {
+	bool* showHover;
+
 	void onAction(const ActionEvent& e) override {
 		ui::Menu* menu = createMenu();
 		menu->cornerFlags = BND_CORNER_TOP;
 		menu->box.pos = getAbsoluteOffset(math::Vec(0, box.size.y));
 
 		menu->addChild(createBoolPtrMenuItem("Show tooltips", "", &settings::tooltips));
+		menu->addChild(createBoolPtrMenuItem("Show hovered IDs", "", showHover));
 
 		ZoomSlider* zoomSlider = new ZoomSlider;
 		zoomSlider->box.size.x = 250.0;
@@ -888,9 +891,42 @@ struct MeterLabel : ui::Label {
 	}
 };
 
+struct HoverLabel : ui::Label {
+	int64_t hoveredModule;
+	int64_t hoveredParam;
+	char hoveredC[64];
+
+	void step() override {
+		Label::step();
+	}
+
+	void updateHover() {
+		rack::widget::EventState* evState = APP->event;
+		if (ModuleWidget *mwidget = dynamic_cast<ModuleWidget *>(evState->hoveredWidget)) {
+			int64_t _hovId = mwidget->getModule()->getId();
+			if (_hovId != hoveredModule) {
+				hoveredModule = _hovId;
+				sprintf(hoveredC, "Module: %x Param: -/-", (unsigned int)hoveredModule);
+				// DEBUG("%x - %s", (unsigned int)hoveredModule, mwidget->getModel()->getFullName().c_str());
+				text = string::f(hoveredC);
+			}
+		}
+		if (ParamWidget *pwidget = dynamic_cast<ParamWidget *>(evState->hoveredWidget)) {
+			int64_t _hovId = pwidget->paramId;
+			if (_hovId != hoveredParam) {
+				hoveredParam = _hovId;
+				sprintf(hoveredC, "Module: %x Param: %02d", (unsigned int)hoveredModule, (unsigned int)hoveredParam);
+				// DEBUG("%x - %s", (unsigned int)hoveredParam, pwidget->module->getParamQuantity(hoveredParam)->name.c_str());
+				text = string::f(hoveredC);
+			}
+		}
+	}
+};
 
 struct MenuBar : widget::OpaqueWidget {
 	MeterLabel* meterLabel;
+	HoverLabel* hoverLabel;
+	bool showHover = false;
 
 	MenuBar() {
 		const float margin = 5;
@@ -911,6 +947,7 @@ struct MenuBar : widget::OpaqueWidget {
 
 		ViewButton* viewButton = new ViewButton;
 		viewButton->text = "View";
+		viewButton->showHover = &showHover;
 		layout->addChild(viewButton);
 
 		EngineButton* engineButton = new EngineButton;
@@ -929,6 +966,15 @@ struct MenuBar : widget::OpaqueWidget {
 		// titleLabel->color.a = 0.5;
 		// layout->addChild(titleLabel);
 
+		hoverLabel = new HoverLabel;
+		hoverLabel->box.pos.y = margin;
+		hoverLabel->box.size.x = 200;
+		hoverLabel->alignment = ui::Label::RIGHT_ALIGNMENT;
+		hoverLabel->color.a = 0.5;
+		hoverLabel->text = "Module: -----/----- Param: -/-";
+		hoverLabel->hide();
+		addChild(hoverLabel);
+
 		meterLabel = new MeterLabel;
 		meterLabel->box.pos.y = margin;
 		meterLabel->box.size.x = 300;
@@ -945,6 +991,14 @@ struct MenuBar : widget::OpaqueWidget {
 	}
 
 	void step() override {
+		if (showHover) {
+			hoverLabel->show();
+			hoverLabel->updateHover();
+			hoverLabel->box.pos.x = box.size.x - hoverLabel->box.size.x - 5 - 200;
+		} else {
+			hoverLabel->hide();
+		}
+
 		meterLabel->box.pos.x = box.size.x - meterLabel->box.size.x - 5;
 		Widget::step();
 	}

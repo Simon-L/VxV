@@ -924,6 +924,15 @@ void ModuleWidget::createContextMenu() {
 	menu->addChild(createMenuLabel(model->name));
 	menu->addChild(createMenuLabel(model->plugin->brand));
 
+	// Module ID
+	char hexID[16];
+	sprintf(hexID, "%x", (unsigned int)module->getId());
+	menu->addChild(createMenuItem("Copy ID to clipboard", std::string(hexID),
+	    [=]() {
+        	glfwSetClipboardString(APP->window->win, hexID);
+	    }
+	));
+
 	// Info
 	menu->addChild(createSubmenuItem("Info", "", [=](ui::Menu* menu) {
 		model->appendContextMenu(menu);
