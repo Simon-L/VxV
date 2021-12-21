@@ -906,8 +906,8 @@ struct HoverLabel : ui::Label {
 			int64_t _hovId = mwidget->getModule()->getId();
 			if (_hovId != hoveredModule) {
 				hoveredModule = _hovId;
-				sprintf(hoveredC, "Module: %x Param: -/-", (unsigned int)hoveredModule);
-				// DEBUG("%x - %s", (unsigned int)hoveredModule, mwidget->getModel()->getFullName().c_str());
+				sprintf(hoveredC, "Module: %lx Param: -/-", (int64_t)hoveredModule);
+				// DEBUG("%x - %s", (int64_t)hoveredModule, mwidget->getModel()->getFullName().c_str());
 				text = string::f(hoveredC);
 			}
 		}
@@ -915,7 +915,7 @@ struct HoverLabel : ui::Label {
 			int64_t _hovId = pwidget->paramId;
 			if (_hovId != hoveredParam) {
 				hoveredParam = _hovId;
-				sprintf(hoveredC, "Module: %x Param: %02d", (unsigned int)hoveredModule, (unsigned int)hoveredParam);
+				sprintf(hoveredC, "Module: %lx Param: %02ld", (int64_t)hoveredModule, (int64_t)hoveredParam);
 				// DEBUG("%x - %s", (unsigned int)hoveredParam, pwidget->module->getParamQuantity(hoveredParam)->name.c_str());
 				text = string::f(hoveredC);
 			}
@@ -968,7 +968,7 @@ struct MenuBar : widget::OpaqueWidget {
 
 		hoverLabel = new HoverLabel;
 		hoverLabel->box.pos.y = margin;
-		hoverLabel->box.size.x = 200;
+		hoverLabel->box.size.x = 250;
 		hoverLabel->alignment = ui::Label::RIGHT_ALIGNMENT;
 		hoverLabel->color.a = 0.5;
 		hoverLabel->text = "Module: -----/----- Param: -/-";
