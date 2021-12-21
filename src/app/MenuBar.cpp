@@ -906,8 +906,9 @@ struct HoverLabel : ui::Label {
 			int64_t _hovId = mwidget->getModule()->getId();
 			if (_hovId != hoveredModule) {
 				hoveredModule = _hovId;
+				hoveredParam = -1;
 				sprintf(hoveredC, "Module: %lx Param: -/-", (int64_t)hoveredModule);
-				// DEBUG("%x - %s", (int64_t)hoveredModule, mwidget->getModel()->getFullName().c_str());
+				// DEBUG("%lx - %s", (int64_t)hoveredModule, mwidget->getModel()->getFullName().c_str());
 				text = string::f(hoveredC);
 			}
 		}
@@ -916,7 +917,7 @@ struct HoverLabel : ui::Label {
 			if (_hovId != hoveredParam) {
 				hoveredParam = _hovId;
 				sprintf(hoveredC, "Module: %lx Param: %02ld", (int64_t)hoveredModule, (int64_t)hoveredParam);
-				// DEBUG("%x - %s", (unsigned int)hoveredParam, pwidget->module->getParamQuantity(hoveredParam)->name.c_str());
+				// DEBUG("%lx - %s", (int64_t)hoveredParam, pwidget->module->getParamQuantity(hoveredParam)->name.c_str());
 				text = string::f(hoveredC);
 			}
 		}
