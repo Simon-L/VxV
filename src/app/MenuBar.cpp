@@ -907,18 +907,16 @@ struct HoverLabel : ui::Label {
 			if (_hovId != hoveredModule) {
 				hoveredModule = _hovId;
 				hoveredParam = -1;
-				sprintf(hoveredC, "Module: %lx Param: -/-", (int64_t)hoveredModule);
 				// DEBUG("%lx - %s", (int64_t)hoveredModule, mwidget->getModel()->getFullName().c_str());
-				text = string::f(hoveredC);
+				text = string::f("Module: 0x%lx Param: -/-", (int64_t)hoveredModule);
 			}
 		}
 		if (ParamWidget *pwidget = dynamic_cast<ParamWidget *>(evState->hoveredWidget)) {
 			int64_t _hovId = pwidget->paramId;
 			if (_hovId != hoveredParam) {
 				hoveredParam = _hovId;
-				sprintf(hoveredC, "Module: %lx Param: %02ld", (int64_t)hoveredModule, (int64_t)hoveredParam);
 				// DEBUG("%lx - %s", (int64_t)hoveredParam, pwidget->module->getParamQuantity(hoveredParam)->name.c_str());
-				text = string::f(hoveredC);
+				text = string::f("Module: 0x%lx Param: %02ld", (int64_t)hoveredModule, (int64_t)hoveredParam);
 			}
 		}
 	}
